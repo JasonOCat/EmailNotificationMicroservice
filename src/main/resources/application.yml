@@ -10,8 +10,8 @@ spring:
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       group-id: product-created-events
       properties:
-        spring-json-trusted-packages: '*'
-        specific.avro.reader: true
-        schema.registry.url: http://localhost:8081
+        spring-json-trusted-packages: com.appsdeveloperblog.ws.products
+        specific-avro-reader: true
+        schema-registry-url: http://localhost:8081
 server:
   port: 8082
