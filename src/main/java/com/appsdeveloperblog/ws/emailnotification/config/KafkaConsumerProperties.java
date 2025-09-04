@@ -20,8 +20,8 @@ public class KafkaConsumerProperties {
     @Setter
     public static class PropertiesProperty {
         private String springJsonTrustedPackages;
-        private boolean specificAvroReader;
         private String schemaRegistryUrl;
+        private boolean specificAvroReader;
 
     }
 }

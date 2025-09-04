@@ -11,7 +11,7 @@ spring:
       group-id: product-created-events
       properties:
         spring-json-trusted-packages: com.appsdeveloperblog.ws.products
-        specific-avro-reader: true
         schema-registry-url: http://localhost:8081
+        specific-avro-reader: true
 server:
   port: 8082
