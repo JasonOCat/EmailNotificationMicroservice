@@ -41,22 +41,22 @@ public class ProductCreatedEventHandler {
         // fake remote service
         String requestUrl = "http://localhost:8082";
 
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
-
-            if (response.getStatusCode().value() == HttpStatus.OK.value()) {
-                log.info("Response from a remote service: {}", response.getBody());
-            }
-        } catch (HttpClientErrorException ex) {
-            log.error(ex.getMessage());
-            throw new RetryableException(ex);
-        } catch (HttpServerErrorException ex) {
-            log.error(ex.getMessage());
-            throw new NotRetryableException(ex);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            throw new NotRetryableException(ex);
-        }
+//        try {
+//            ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
+//
+//            if (response.getStatusCode().value() == HttpStatus.OK.value()) {
+//                log.info("Response from a remote service: {}", response.getBody());
+//            }
+//        } catch (HttpClientErrorException ex) {
+//            log.error(ex.getMessage());
+//            throw new RetryableException(ex);
+//        } catch (HttpServerErrorException ex) {
+//            log.error(ex.getMessage());
+//            throw new NotRetryableException(ex);
+//        } catch (Exception ex) {
+//            log.error(ex.getMessage());
+//            throw new NotRetryableException(ex);
+//        }
 
         log.info("****** Received ProductCreatedEvent ******");
         log.info("Product ID: {}", productCreatedEvent.getProductId());
