@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +38,7 @@ public class ProductCreatedEventHandler {
         // Decode the decimal logical type from the Avro "price" field
         // BigDecimal price = decodeDecimal(productCreatedEvent.getPrice(), 2);
 
+        // fake remote service
         String requestUrl = "http://localhost:8082";
 
         try {
@@ -45,7 +47,7 @@ public class ProductCreatedEventHandler {
             if (response.getStatusCode().value() == HttpStatus.OK.value()) {
                 log.info("Response from a remote service: {}", response.getBody());
             }
-        } catch (ResourceAccessException ex) {
+        } catch (HttpClientErrorException ex) {
             log.error(ex.getMessage());
             throw new RetryableException(ex);
         } catch (HttpServerErrorException ex) {
