@@ -1,5 +1,6 @@
 package com.appsdeveloperblog.ws.emailnotification.config;
 
+import com.appsdeveloperblog.ws.emailnotification.error.NotRetryableException;
 import com.appsdeveloperblog.ws.products.ProductCreatedEvent;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class KafkaConfig {
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(KafkaTemplate<String, Object> kafkaTemplate) {
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(new DeadLetterPublishingRecoverer(kafkaTemplate));
+        errorHandler.addNotRetryableExceptions(NotRetryableException.class);
 
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
