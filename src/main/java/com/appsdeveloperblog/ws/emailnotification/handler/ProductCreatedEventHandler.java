@@ -24,6 +24,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +50,12 @@ public class ProductCreatedEventHandler {
 
 //        ProductCreatedEvent productCreatedEvent = consumerRecord.value();
 
-        log.info("Received a new event: {}", productCreatedEvent.getTitle());
+        log.info("Received a new event: {} with productId: {}", productCreatedEvent.getTitle(), productCreatedEvent.getProductId());
+
+        // Check if this message was already processed before
+        Optional<ProcessedEventEntity> existingRecord = processedEventRepository.findByMessageId(messageId);
+
+        existingRecord.ifPresent(processedEventEntity -> log.info("Found a duplicate id: {}", processedEventEntity.getMessageId()));
 
         // Decode the decimal logical type from the Avro "price" field
         // BigDecimal price = decodeDecimal(productCreatedEvent.getPrice(), 2);
