@@ -2,10 +2,13 @@ package com.appsdeveloperblog.ws.emailnotification.handler;
 
 import com.appsdeveloperblog.ws.emailnotification.error.NotRetryableException;
 import com.appsdeveloperblog.ws.emailnotification.error.RetryableException;
+import com.appsdeveloperblog.ws.emailnotification.io.ProcessedEventEntity;
+import com.appsdeveloperblog.ws.emailnotification.io.ProcessedEventRepository;
 import com.appsdeveloperblog.ws.products.ProductCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -26,8 +31,11 @@ public class ProductCreatedEventHandler {
 
     private final RestTemplate restTemplate;
 
+    private final ProcessedEventRepository processedEventRepository;
+
     @KafkaListener(topics = "product-created-events-topic")
 //    public void handle(ConsumerRecord<String, ProductCreatedEvent> consumerRecord) {
+    @Transactional
     public void handle(
             @Payload ProductCreatedEvent productCreatedEvent,
             @Header("messageId") String messageId,
@@ -73,6 +81,17 @@ public class ProductCreatedEventHandler {
 
         log.info("Quantity: {}", productCreatedEvent.getQuantity());
 
+
+        // Save a unique message id in a database table
+        try {
+            processedEventRepository.save(ProcessedEventEntity.builder()
+                    .messageId(messageId)
+                    .productId(productCreatedEvent.getProductId())
+                    .build()
+            );
+        } catch (DataIntegrityViolationException ex) {
+            throw new NotRetryableException(ex);
+        }
 
     }
 
